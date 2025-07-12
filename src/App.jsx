@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { auth, provider } from "./firebase";
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import ChatRoom from "./components/ChatRoom";
-
+import { auth, provider, db } from "./firebase";
 function App() {
   const [user, setUser] = useState(null);
 
