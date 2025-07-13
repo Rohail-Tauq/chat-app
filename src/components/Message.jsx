@@ -1,50 +1,150 @@
-import React from "react";
+// components/Message.jsx
+import React, { useState } from "react";
+import { db } from "../firebase";
+import { doc, deleteDoc, updateDoc } from "firebase/firestore";
 
 function Message({ message, user }) {
-  const isUser = message.uid === user.uid;
+  const isOwnMessage = user.uid === message.uid;
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(message.text);
+
+  const handleDelete = async () => {
+    await deleteDoc(doc(db, "messages", message.id));
+  };
+
+  const handleEdit = async () => {
+    if (!editText.trim()) return;
+    await updateDoc(doc(db, "messages", message.id), {
+      text: editText,
+      edited: true,
+    });
+    setIsEditing(false);
+  };
 
   return (
     <div
       style={{
         display: "flex",
-        flexDirection: isUser ? "row-reverse" : "row",
-        alignItems: "flex-end",
-        justifyContent: isUser ? "flex-end" : "flex-start",
-        margin: "12px 0",
+        flexDirection: isOwnMessage ? "row-reverse" : "row",
+        alignItems: "flex-start",
+        marginBottom: "14px",
       }}
     >
+      {/* Profile Picture */}
       <img
         src={message.photoURL}
-        alt="user"
+        alt="User"
         style={{
-          width: "36px",
-          height: "36px",
+          width: "40px",
+          height: "40px",
           borderRadius: "50%",
-          margin: isUser ? "0 0 0 10px" : "0 10px 0 0",
-          border: "2px solid #ddd",
+          margin: isOwnMessage ? "0 0 0 10px" : "0 10px 0 0",
+          border: "2px solid #ccc",
         }}
       />
+
+      {/* Message Bubble */}
       <div
         style={{
-          backgroundColor: isUser ? "#ffe0b2" : "#c8e6c9", // orange for user, green for others
-          color: "#333",
-          padding: "12px 16px",
-          borderRadius: "20px",
+          backgroundColor: isOwnMessage ? "#e0f7fa" : "#f1f1f1",
+          padding: "10px 14px",
+          borderRadius: "12px",
           maxWidth: "70%",
-          boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+          width: "fit-content",
+          textAlign: "left",
         }}
       >
         <div
           style={{
             fontSize: "0.85rem",
             fontWeight: "bold",
-            color: isUser ? "#e65100" : "#2e7d32",
+            color: "#444",
             marginBottom: "4px",
           }}
         >
-          {message.displayName}
+          {message.displayName} {message.edited && <em>(edited)</em>}
         </div>
-        <div style={{ fontSize: "1rem" }}>{message.text}</div>
+
+        {isEditing ? (
+          <>
+            <input
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "6px",
+                fontSize: "1rem",
+                marginBottom: "6px",
+              }}
+            />
+            <div>
+              <button
+                onClick={handleEdit}
+                style={{
+                  marginRight: "8px",
+                  background: "#4caf50",
+                  color: "#fff",
+                  border: "none",
+                  padding: "6px 12px",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setIsEditing(false)}
+                style={{
+                  background: "#bdbdbd",
+                  color: "#fff",
+                  border: "none",
+                  padding: "6px 12px",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize: "1rem" }}>{message.text}</div>
+            {isOwnMessage && (
+              <div style={{ marginTop: "6px" }}>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  style={{
+                    marginRight: "8px",
+                    background: "#ff9800",
+                    color: "#fff",
+                    border: "none",
+                    padding: "4px 10px",
+                    borderRadius: "4px",
+                    fontSize: "0.8rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={handleDelete}
+                  style={{
+                    background: "#f44336",
+                    color: "#fff",
+                    border: "none",
+                    padding: "4px 10px",
+                    borderRadius: "4px",
+                    fontSize: "0.8rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
