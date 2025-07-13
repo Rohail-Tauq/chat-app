@@ -52,13 +52,14 @@ function Message({ message, user }) {
           maxWidth: "70%",
           width: "fit-content",
           textAlign: "left",
+          color: "#000", // ✅ Force black text
         }}
       >
         <div
           style={{
             fontSize: "0.85rem",
             fontWeight: "bold",
-            color: "#444",
+            color: "#222", // ✅ Darker text for name
             marginBottom: "4px",
           }}
         >
@@ -75,6 +76,7 @@ function Message({ message, user }) {
                 padding: "6px",
                 fontSize: "1rem",
                 marginBottom: "6px",
+                color: "#000", // ✅ Ensure input text is visible
               }}
             />
             <div>
@@ -109,7 +111,9 @@ function Message({ message, user }) {
           </>
         ) : (
           <>
-            <div style={{ fontSize: "1rem" }}>{message.text}</div>
+            <div style={{ fontSize: "1rem", color: "#000" /* ✅ Message text color */ }}>
+              {message.text}
+            </div>
             {isOwnMessage && (
               <div style={{ marginTop: "6px" }}>
                 <button
