@@ -1,4 +1,3 @@
-// components/Message.jsx
 import React, { useState } from "react";
 import { db } from "../firebase";
 import { doc, deleteDoc, updateDoc } from "firebase/firestore";
@@ -27,7 +26,8 @@ function Message({ message, user }) {
         display: "flex",
         flexDirection: isOwnMessage ? "row-reverse" : "row",
         alignItems: "flex-start",
-        marginBottom: "14px",
+        marginBottom: "18px",
+        padding: "0 10px",
       }}
     >
       {/* Profile Picture */}
@@ -35,37 +35,44 @@ function Message({ message, user }) {
         src={message.photoURL}
         alt="User"
         style={{
-          width: "40px",
-          height: "40px",
+          width: "44px",
+          height: "44px",
           borderRadius: "50%",
-          margin: isOwnMessage ? "0 0 0 10px" : "0 10px 0 0",
-          border: "2px solid #ccc",
+          margin: isOwnMessage ? "0 0 0 12px" : "0 12px 0 0",
+          border: "2px solid #ddd",
+          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.15)",
         }}
       />
 
       {/* Message Bubble */}
       <div
         style={{
-          backgroundColor: isOwnMessage ? "#e0f7fa" : "#f1f1f1",
-          padding: "10px 14px",
-          borderRadius: "12px",
-          maxWidth: "70%",
+          background: "rgba(255, 255, 255, 0.15)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          padding: "14px 18px",
+          borderRadius: "16px",
+          maxWidth: "75%",
           width: "fit-content",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          border: "1px solid rgba(255, 255, 255, 0.25)",
           textAlign: "left",
-          color: "#000", // ✅ Force black text
+          color: "#000",
         }}
       >
+        {/* Name */}
         <div
           style={{
-            fontSize: "0.85rem",
+            fontSize: "0.9rem",
             fontWeight: "bold",
-            color: "#222", // ✅ Darker text for name
-            marginBottom: "4px",
+            color: "#222",
+            marginBottom: "6px",
           }}
         >
-          {message.displayName} {message.edited && <em>(edited)</em>}
+          {message.displayName} {message.edited && <em style={{ fontWeight: "normal" }}>(edited)</em>}
         </div>
 
+        {/* Message Content */}
         {isEditing ? (
           <>
             <input
@@ -73,37 +80,24 @@ function Message({ message, user }) {
               onChange={(e) => setEditText(e.target.value)}
               style={{
                 width: "100%",
-                padding: "6px",
+                padding: "8px",
                 fontSize: "1rem",
-                marginBottom: "6px",
-                color: "#000", // ✅ Ensure input text is visible
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                marginBottom: "10px",
+                color: "#000",
               }}
             />
             <div>
               <button
                 onClick={handleEdit}
-                style={{
-                  marginRight: "8px",
-                  background: "#4caf50",
-                  color: "#fff",
-                  border: "none",
-                  padding: "6px 12px",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
+                style={buttonStyle("#4caf50")}
               >
                 Save
               </button>
               <button
                 onClick={() => setIsEditing(false)}
-                style={{
-                  background: "#bdbdbd",
-                  color: "#fff",
-                  border: "none",
-                  padding: "6px 12px",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
+                style={buttonStyle("#9e9e9e")}
               >
                 Cancel
               </button>
@@ -111,37 +105,20 @@ function Message({ message, user }) {
           </>
         ) : (
           <>
-            <div style={{ fontSize: "1rem", color: "#000" /* ✅ Message text color */ }}>
+            <div style={{ fontSize: "1rem", lineHeight: "1.5", color: "#000" }}>
               {message.text}
             </div>
             {isOwnMessage && (
-              <div style={{ marginTop: "6px" }}>
+              <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
                 <button
                   onClick={() => setIsEditing(true)}
-                  style={{
-                    marginRight: "8px",
-                    background: "#ff9800",
-                    color: "#fff",
-                    border: "none",
-                    padding: "4px 10px",
-                    borderRadius: "4px",
-                    fontSize: "0.8rem",
-                    cursor: "pointer",
-                  }}
+                  style={buttonStyle("#ff9800")}
                 >
                   Edit
                 </button>
                 <button
                   onClick={handleDelete}
-                  style={{
-                    background: "#f44336",
-                    color: "#fff",
-                    border: "none",
-                    padding: "4px 10px",
-                    borderRadius: "4px",
-                    fontSize: "0.8rem",
-                    cursor: "pointer",
-                  }}
+                  style={buttonStyle("#f44336")}
                 >
                   Delete
                 </button>
@@ -153,5 +130,18 @@ function Message({ message, user }) {
     </div>
   );
 }
+
+// Shared button styling function
+const buttonStyle = (bgColor) => ({
+  background: bgColor,
+  color: "#fff",
+  border: "none",
+  padding: "6px 12px",
+  borderRadius: "6px",
+  fontSize: "0.85rem",
+  cursor: "pointer",
+  transition: "background 0.3s",
+  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+});
 
 export default Message;
